@@ -106,7 +106,7 @@ while not closed:
 			if snow[i][1]>598:
 				#redraws snow elsewhere if it goes offgame_display
 				x=randint(0,800)
-				y=0
+				y=randint(-50, -10)
 				snow[i][0]=x
 				snow[i][1]=y
 	def bouncing_box():
