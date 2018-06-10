@@ -1,28 +1,32 @@
 #imports used throughout the script, don't forget these
 import pygame
-from random import *
+import random
 import math
 
 #initiates pygame, very importante
 pygame.init()
 
 #sets up colors in RGB format
-Black=(0, 0, 0)
-White=(255, 255, 255,)
-Green=(0, 255, 0)
-Blue=(0, 0, 255)
-Red=(255, 0, 0)
-Yellow=(255, 255, 0)
+Black = (0, 0, 0)
+White = (255, 255, 255,)
+Green = (0, 255, 0)
+Blue = (0, 0, 255)
+Red = (255, 0, 0)
+Yellow = (255, 255, 0)
+Purple = (255, 0, 255)
 
 #sets a list of colors
-palette=[Yellow, Red, Green, Blue, White, Black]
+palette = [Yellow, Red, Green, Blue, White, Black]
+
+rep = 0
 
 #sets up a font, cailibri is typeface, 25 is point size, True is bold, False is italics
-font=pygame.font.SysFont('Calibri', 25, True, False)
-
+font = pygame.font.SysFont('Calibri', 25, True, False)
 #establishes window
-size=(800, 600)
-game_display=pygame.display.set_mode(size)
+Width = 800
+Height = 600
+size = (Width, Height)
+game_display = pygame.display.set_mode(size)
 pygame.display.set_caption('test')
 
 #says the game isn't closed, main loop only goes while this is false
@@ -32,11 +36,12 @@ clock=pygame.time.Clock()
 
 pygame.mouse.set_visible(False)
 
-rect_x=1
-rect_y=1
-rect_ix=3
-rect_iy=3
-snow=[]
+x_vel=0
+y_vel=0
+x = -50
+y = -50
+curent_canvas = []
+rep = 0
 while not closed:
 	#main event loop
 	for event in pygame.event.get():
@@ -59,66 +64,48 @@ while not closed:
 				y_vel=0
 
 	#game logic here
-
+	def text_box(x, y, l, w):
+		b = pygame.Surface((l, w))
+		b.set_alpha(128)
+		b.fill(White)
+		game_display.blit(b, (x, y))
+	def text(stri, x, y, color):
+		text = font.render(stri, False, color)
+		#text_rect = text.get_rect(center = (x, y))
+		game_display.blit(text, (x, y))
 	#drawing code here
 
 	game_display.fill(White)
 	#clears the game_display
-	def draw_stick_figure(game_display, x, y):
-		# Head
-		pygame.draw.ellipse(game_display, Black, [1+x,y,10,10], 0)
-	    # Legs
-		pygame.draw.line(game_display, Black ,[5+x,17+y], [10+x,27+y], 2)
-		pygame.draw.line(game_display, Black, [5+x,17+y], [x,27+y], 2)
-		# Body
-		pygame.draw.line(game_display, Red, [5+x,17+y], [5+x,7+y], 2)
-		# Arms
-		pygame.draw.line(game_display, Red, [5+x,7+y], [9+x,17+y], 2)
-		pygame.draw.line(game_display, Red, [5+x,7+y], [1+x,17+y], 2)
-	def mouse_cursor():
-		pos=pygame.mouse.get_pos()
-		x=pos[0]
-		y=pos[1]
-		draw_stick_figure(game_display, x, y)
 
-	def keyboard_velocity_test(x_coord, y_coord):
-		#this doesn't work as an individual function because of the way the loop is executed
-		x_vel=0
-		y_vel=0
+	x-=x_vel
+	y-=y_vel
+	if x >= 390:
+		x = 390
+	elif x <=-490:
+		x = -490
+	if y >= 290:
+		y = 290
+	elif y <= -390:
+		y = -390
+	if rep==0:
+		for i in range(x, x+900, 50):
+			for j in range (y, y+700, 50):
+				color_used = random.choice(palette)
+				#game_display is what it's being drawn to, color_used is the color, i and j are where it starts being drawn, and 50 and 50 are side length
+				pygame.draw.rect(game_display, color_used, [i, j, 50, 50])
+				curent_canvas.append(color_used)
+		rep = 1
+	else:
+		counter=0
+		for i in range(x, x+900, 50):
+			for j in range(y, y+700, 50):
+				pygame.draw.rect(game_display, curent_canvas[counter], [i, j, 50, 50])
+				counter+=1
 
-		x_coord=10
-		y_coord=10		
-
-		x_coord+=x_vel
-		y_coord+=y_vel
-		draw_stick_figure(game_display, x_coord, y_coord)
-
-	def snowflakes():
-		x=randint(0,800)
-		y=randint(0,600)
-		snow.append([x, y])
-		#i is item in list, going through every list item
-		for i in range(len(snow)):
-			#game_display is the display being drawn to. White is color, x and y are coordinates, 2 is size
-			pygame.draw.circle(game_display, White, snow[i], 2)
-			#snow[i] is the item in the list at position [i]
-			snow[i][1]+=1
-			if snow[i][1]>598:
-				#redraws snow elsewhere if it goes offgame_display
-				x=randint(0,800)
-				y=randint(-50, -10)
-				snow[i][0]=x
-				snow[i][1]=y
-	def bouncing_box():
-		pygame.draw.rect(game_display, Green, [x, y, 50, 50])
-		#game_display is what display it is set to. Green is color, and x and y are where it starts being drawn. 50 and 50 are parameters for side length
-		if x>=750 or x<=0:
-			ix*=-1
-		if y>=550 or y<=0:
-			iy*=-1
-		x+=ix
-		y+=iy
-	keyboard_velocity_test()
+	pygame.draw.rect(game_display, Purple, [390, 290, 20, 20])
+	text = font.render('nam jef', False, [0, 0, 0])
+	text_rect = text.get_rect(center = (Width/2, (Height/2)-30))
 	#this actually updates the game_display, is kinda important
 	pygame.display.flip()
 	clock.tick(60)
